@@ -1,0 +1,46 @@
+{
+  "name": "opium-js",
+  "productName": "opiumJS",
+  "version": "1.0.0",
+  "description": "A desktop app for running Javascript",
+  "main": "main.js",
+  "scripts": {
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "author": "Prasanjit Singh",
+  "license": "MIT",
+  "build": {
+    "productName": "opiumJS",
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    }
+  },
+  "devDependencies": {
+    "electron": "^2.0.2",
+    "electron-builder": "^20.13.3",
+    "typescript": "^2.5.2"
+  },
+  "dependencies": {
+    "monaco-editor": "^0.10.1"
+  }
+}
