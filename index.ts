@@ -5,11 +5,23 @@ var monacoInput: monaco.editor.IStandaloneCodeEditor
 var monacoOutput: monaco.editor.IStandaloneCodeEditor
 
 console.log = code => {
-  if (typeof (code) === 'function') {
+  if (code === console.log) return
+
+  if (typeof code === 'function') {
     opmAppendOutput(code.toString())
     return
   }
-  opmAppendOutput( JSON.stringify(code, null, ' ') )
+
+  if (Array.isArray(code)) {
+    const codeString = (JSON.stringify(code)).replace(/,/g, ', ')
+
+    if (codeString.match(/[^\n]/g).length < 55) {
+      opmAppendOutput(codeString)
+      return
+    }
+  }
+
+  opmAppendOutput(JSON.stringify(code, null, ' '))
 }
 
 const opmAppendOutput = code => {
@@ -23,7 +35,7 @@ const opmAppendOutput = code => {
 
 const initMonacoInput = () => {
     monacoInput = monaco.editor.create(document.getElementById('input'), {
-      value: '',
+      value: localStorage.getItem('code') || '',
       language: 'javascript',
       automaticLayout: true,
       fontSize: 14,
@@ -74,6 +86,19 @@ const initMonacoInput = () => {
         monacoOutput.setValue('')
       }
   })
+
+  monacoInput.addAction({
+    id: 'save',
+    label: 'Save',
+
+    keybindings: [
+      monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_S
+    ],
+
+    run: ed => {
+      localStorage.setItem('code', ed.getValue())
+    }
+})
 }
 
 const initMonacoOutput = () => {
