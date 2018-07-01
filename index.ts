@@ -1,36 +1,37 @@
 /// <reference path="node_modules/monaco-editor/monaco.d.ts" />
 
 declare var amdRequire
+const output = require('./output')
+
 var monacoInput: monaco.editor.IStandaloneCodeEditor
 var monacoOutput: monaco.editor.IStandaloneCodeEditor
 
 console.log = code => {
-  if (code === console.log) return
-
-  if (typeof code === 'function') {
-    opmAppendOutput(code.toString())
-    return
-  }
-
-  if (Array.isArray(code)) {
-    const codeString = (JSON.stringify(code)).replace(/,/g, ', ')
-
-    if (codeString.match(/[^\n]/g).length < 55) {
-      opmAppendOutput(codeString)
-      return
-    }
-  }
-
-  opmAppendOutput(JSON.stringify(code, null, ' '))
+  opmAppendOutput(output(code), false)
 }
 
-const opmAppendOutput = code => {
+let errorHighlights = []
+const appendErrorHighlight = lineNo => {
+  var obj = {
+    range: new monaco.Range(lineNo, 1, lineNo, 100),
+    options: { inlineClassName: 'myInlineDecoration' }
+  }
+  errorHighlights.push(obj)
+}
+
+const opmAppendOutput = (code, isError) => {
   const currentValue = monacoOutput.getValue()
   const separator = currentValue ? '\n\n' : ''
   const updatedValue = currentValue + separator + code
 
   monacoOutput.setValue(updatedValue)
-  monacoOutput.revealLine((updatedValue.match(/\n/gm) || []).length + 5)
+  const totalLines = (updatedValue.match(/\n/gm) || []).length
+  monacoOutput.revealLine(totalLines + 5)
+
+  if (isError) {
+    appendErrorHighlight(totalLines + 1)
+  }
+  monacoOutput.deltaDecorations([], errorHighlights)
 }
 
 const initMonacoInput = () => {
@@ -38,12 +39,13 @@ const initMonacoInput = () => {
       value: localStorage.getItem('code') || '',
       language: 'javascript',
       automaticLayout: true,
-      fontSize: 14,
+      fontSize: 13,
       lineHeight: 24,
       folding: true,
       theme: 'vs-dark',
       renderLineHighlight: 'none',
       multiCursorModifier: 'ctrlCmd',
+      contextmenu: false,
       minimap: { enabled: false },
       scrollbar: {
         verticalScrollbarSize: 4,
@@ -69,7 +71,7 @@ const initMonacoInput = () => {
         try {
           eval(code)
         } catch(err) {
-          opmAppendOutput(err)
+          opmAppendOutput(err, true)
         }
       }
     })
@@ -84,6 +86,7 @@ const initMonacoInput = () => {
 
       run: () => {
         monacoOutput.setValue('')
+        errorHighlights = []
       }
   })
 
@@ -104,7 +107,7 @@ const initMonacoInput = () => {
 const initMonacoOutput = () => {
   monacoOutput = monaco.editor.create(document.getElementById('output'), {
     value: '',
-    language: 'json',
+    language: 'javascript',
     automaticLayout: true,
     lineNumbers: 'off',
     fontSize: 13,
@@ -114,6 +117,7 @@ const initMonacoOutput = () => {
     matchBrackets: false,
     theme: 'vs-dark',
     renderLineHighlight: 'none',
+    contextmenu: false,
     minimap: { enabled: false },
     scrollbar: {
       verticalScrollbarSize: 4,
