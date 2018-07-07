@@ -10,7 +10,7 @@ const output = code => {
   const depth = opmIsCyclic(code) ? 0 : 100
   const isCompact = Array.isArray(code) && inspect(code).length < 55
 
-  return inspect(code, { compact: isCompact, depth: depth, breakLength: 55 })
+  return inspect(code, { compact: isCompact, depth: depth, breakLength: Infinity })
 }
 
 const opmIsCyclic = obj => {

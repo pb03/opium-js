@@ -1,7 +1,7 @@
 {
   "name": "opium-js",
   "productName": "opiumJS",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A desktop app for running Javascript",
   "main": "main.js",
   "scripts": {
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "electron": "^3.0.0-beta.1",
-    "electron-builder": "^20.13.3",
+    "electron-builder": "^20.18.0",
     "typescript": "^2.5.2"
   },
   "dependencies": {

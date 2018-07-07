@@ -2,37 +2,10 @@
 
 declare var amdRequire
 const output = require('./output')
+const coverage = require('./coverage')
 
 var monacoInput: monaco.editor.IStandaloneCodeEditor
 var monacoOutput: monaco.editor.IStandaloneCodeEditor
-
-console.log = code => {
-  opmAppendOutput(output(code), false)
-}
-
-let errorHighlights = []
-const appendErrorHighlight = lineNo => {
-  var obj = {
-    range: new monaco.Range(lineNo, 1, lineNo, 100),
-    options: { inlineClassName: 'myInlineDecoration' }
-  }
-  errorHighlights.push(obj)
-}
-
-const opmAppendOutput = (code, isError) => {
-  const currentValue = monacoOutput.getValue()
-  const separator = currentValue ? '\n\n' : ''
-  const updatedValue = currentValue + separator + code
-
-  monacoOutput.setValue(updatedValue)
-  const totalLines = (updatedValue.match(/\n/gm) || []).length
-  monacoOutput.revealLine(totalLines + 5)
-
-  if (isError) {
-    appendErrorHighlight(totalLines + 1)
-  }
-  monacoOutput.deltaDecorations([], errorHighlights)
-}
 
 const initMonacoInput = () => {
     monacoInput = monaco.editor.create(document.getElementById('input'), {
@@ -48,14 +21,14 @@ const initMonacoInput = () => {
       contextmenu: false,
       minimap: { enabled: false },
       scrollbar: {
-        verticalScrollbarSize: 4,
-        horizontalScrollbarSize: 4
+        verticalScrollbarSize: 5,
+        horizontalScrollbarSize: 5
       }
     })
 
-    monacoInput.getModel().updateOptions({ tabSize: 2 })
-
     monacoInput.focus()
+
+    monacoInput.getModel().updateOptions({ tabSize: 2 })
 
     monacoInput.addAction({
       id: 'run-function',
@@ -68,10 +41,35 @@ const initMonacoInput = () => {
       run: ed => {
         const code = ed.getValue()
 
+        clearCoverageDots()
+
         try {
           eval(code)
-        } catch(err) {
+        } catch (err) {
           opmAppendOutput(err, true)
+        }
+      }
+    })
+
+    monacoInput.addAction({
+      id: 'code-coverage',
+      label: 'Code coverage',
+
+      keybindings: [
+        monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_R
+      ],
+
+      run: ed => {
+        const code = ed.getValue()
+
+        clearCoverageDots()
+
+        const { lines, errorMessage } = coverage(code)
+        coverageLines = lines
+        coverageDots = monacoInput.deltaDecorations([], coverageLines)
+
+        if (errorMessage) {
+          opmAppendOutput(errorMessage, true)
         }
       }
     })
@@ -106,7 +104,6 @@ const initMonacoInput = () => {
 
 const initMonacoOutput = () => {
   monacoOutput = monaco.editor.create(document.getElementById('output'), {
-    value: '',
     language: 'javascript',
     automaticLayout: true,
     lineNumbers: 'off',
@@ -120,12 +117,47 @@ const initMonacoOutput = () => {
     contextmenu: false,
     minimap: { enabled: false },
     scrollbar: {
-      verticalScrollbarSize: 4,
-      horizontalScrollbarSize: 4
+      verticalScrollbarSize: 5,
+      horizontalScrollbarSize: 5
     }
   })
 
   monacoOutput.getModel().updateOptions({ tabSize: 2 })
+}
+
+console.log = code => {
+  opmAppendOutput(output(code), false)
+}
+
+const opmAppendOutput = (code, isError) => {
+  const updatedValue = monacoOutput.getValue() + code + '\n\n'
+  monacoOutput.setValue(updatedValue)
+
+  const totalLines = (updatedValue.match(/\n/gm) || []).length
+
+  monacoOutput.revealLine(totalLines)
+
+  if (isError) {
+    appendErrorHighlight(totalLines - 1)
+  }
+  monacoOutput.deltaDecorations([], errorHighlights)
+}
+
+let errorHighlights = []
+const appendErrorHighlight = lineNo => {
+  const obj = {
+    range: new monaco.Range(lineNo, 1, lineNo, 100),
+    options: { inlineClassName: 'inlineDecoration' }
+  }
+  errorHighlights.push(obj)
+}
+
+let coverageDots
+let coverageLines = []
+const clearCoverageDots = () => {
+  if (coverageLines.length) {
+    monacoInput.deltaDecorations(coverageDots, [])
+  }
 }
 
 amdRequire(['vs/editor/editor.main'], () => {
