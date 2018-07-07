@@ -5,7 +5,7 @@ const converage = code => {
   let currentLine = 1
   let prevLine = ''
 
-  const modifiedCode = code.split('\n').map((line, i) => {
+  code = code.split('\n').map((line, i) => {
     if (line === ''
         || /^((\s+)?[\]})];?(\s+)?)$/.test(line)
         || /^(\s+)?\/\//.test(line)
@@ -33,10 +33,6 @@ const converage = code => {
   } catch (err) {
     errorMessage = err
   }
-
-  try {
-    eval(modifiedCode)
-  } catch (err) {}
 
   opmLineNos.forEach(lineNo => {
     const obj = {
