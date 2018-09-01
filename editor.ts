@@ -1,29 +1,38 @@
 /// <reference path="node_modules/monaco-editor/monaco.d.ts" />
 
-declare var amdRequire
+declare const amdRequire
+const theme = require('./theme')
 const output = require('./output')
 const coverage = require('./coverage')
 
-var monacoInput: monaco.editor.IStandaloneCodeEditor
-var monacoOutput: monaco.editor.IStandaloneCodeEditor
+let monacoInput: monaco.editor.IStandaloneCodeEditor
+let monacoOutput: monaco.editor.IStandaloneCodeEditor
+
+const monacoOptions = {
+  language: 'javascript',
+  automaticLayout: true,
+  folding: true,
+  theme: 'afeemTheme',
+  contextmenu: false,
+  minimap: { enabled: false },
+  scrollbar: {
+    verticalScrollbarSize: 0,
+    horizontalScrollbarSize: 0
+  }
+}
+
+let coverageDots
+let coverageLines = []
+let errorHighlights = []
 
 const initMonacoInput = () => {
     monacoInput = monaco.editor.create(document.getElementById('input'), {
+      ...monacoOptions,
       value: localStorage.getItem('code') || '',
-      language: 'javascript',
-      automaticLayout: true,
       fontSize: 13,
       lineHeight: 24,
-      folding: true,
-      theme: 'vs-dark',
       renderLineHighlight: 'none',
-      multiCursorModifier: 'ctrlCmd',
-      contextmenu: false,
-      minimap: { enabled: false },
-      scrollbar: {
-        verticalScrollbarSize: 5,
-        horizontalScrollbarSize: 5
-      }
+      multiCursorModifier: 'ctrlCmd'
     })
 
     monacoInput.focus()
@@ -99,27 +108,18 @@ const initMonacoInput = () => {
     run: ed => {
       localStorage.setItem('code', ed.getValue())
     }
-})
+  })
 }
 
 const initMonacoOutput = () => {
   monacoOutput = monaco.editor.create(document.getElementById('output'), {
-    language: 'javascript',
-    automaticLayout: true,
+    ...monacoOptions,
     lineNumbers: 'off',
-    fontSize: 13,
+    fontSize: 12,
     lineHeight: 21,
     readOnly: true,
-    folding: true,
     matchBrackets: false,
-    theme: 'vs-dark',
-    renderLineHighlight: 'none',
-    contextmenu: false,
-    minimap: { enabled: false },
-    scrollbar: {
-      verticalScrollbarSize: 5,
-      horizontalScrollbarSize: 5
-    }
+    renderLineHighlight: 'none'
   })
 
   monacoOutput.getModel().updateOptions({ tabSize: 2 })
@@ -131,29 +131,25 @@ console.log = code => {
 
 const opmAppendOutput = (code, isError) => {
   const updatedValue = monacoOutput.getValue() + code + '\n\n'
-  monacoOutput.setValue(updatedValue)
-
   const totalLines = (updatedValue.match(/\n/gm) || []).length
 
+  monacoOutput.setValue(updatedValue)
   monacoOutput.revealLine(totalLines)
 
   if (isError) {
     appendErrorHighlight(totalLines - 1)
   }
+
   monacoOutput.deltaDecorations([], errorHighlights)
 }
 
-let errorHighlights = []
 const appendErrorHighlight = lineNo => {
-  const obj = {
+  errorHighlights.push({
     range: new monaco.Range(lineNo, 1, lineNo, 100),
     options: { inlineClassName: 'inlineDecoration' }
-  }
-  errorHighlights.push(obj)
+  })
 }
 
-let coverageDots
-let coverageLines = []
 const clearCoverageDots = () => {
   if (coverageLines.length) {
     monacoInput.deltaDecorations(coverageDots, [])
@@ -161,6 +157,7 @@ const clearCoverageDots = () => {
 }
 
 amdRequire(['vs/editor/editor.main'], () => {
+  monaco.editor.defineTheme('afeemTheme', theme)
   initMonacoInput()
   initMonacoOutput()
 })
