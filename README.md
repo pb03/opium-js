@@ -1,13 +1,13 @@
 # opiumJS
 
-A desktop app for testing JavaScript
+A desktop utility app for running JS snippets
 
 <img src="https://github.com/pb03/opium-js/raw/master/demo.gif" width="680" alt="Demo">
 
 ## Features and Commands
 | Command | Function |
 |---|---|
-| `Cmd + R` | Run code |
+| `Cmd + R` | Run snippet |
 | `Cmd + K` | Clear output |
-| `Cmd + Shift + R` | Run code with code coverage indicators |
-| `Cmd + Shift + S` | Save  code |
+| `Cmd + Shift + R` | Run code with code coverage indicators <small>(experimental)</small> |
+| `Cmd + Shift + S` | Save current snippet |
