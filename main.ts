@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu } from 'electron'
+import { app, BrowserWindow, Menu, shell } from 'electron'
 const menuTemplate = require('./menuTemplate')
 
 let mainWindow
@@ -27,6 +27,13 @@ const setAppMenu = () => {
       {
         label: 'Keyboard Shortcuts',
         click () { createHelpWindow() }
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Learn More',
+        click () { shell.openExternal('https://github.com/pb03/opium-js') }
       }
     ]
   })
