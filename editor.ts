@@ -4,6 +4,7 @@ declare const amdRequire
 const theme = require('./theme')
 const output = require('./output')
 const coverage = require('./coverage')
+const autoCompletions = require('./autoCompletions')
 
 let monacoInput: monaco.editor.IStandaloneCodeEditor
 let monacoOutput: monaco.editor.IStandaloneCodeEditor
@@ -158,6 +159,11 @@ const clearCoverageDots = () => {
 
 amdRequire(['vs/editor/editor.main'], () => {
   monaco.editor.defineTheme('afeemTheme', theme)
+
+  monaco.languages.registerCompletionItemProvider('javascript', {
+    provideCompletionItems: () => autoCompletions
+  })
+
   initMonacoInput()
   initMonacoOutput()
 })
