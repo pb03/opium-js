@@ -1,6 +1,6 @@
 var autoCompletions = [
   {
-    label: 'fre',
+    label: 'fore',
     detail: 'Insert forEach statement',
     insertText: {
       value: '${1:array}.forEach(${2:el} => {\n\t$0\n})'
@@ -77,7 +77,7 @@ var autoCompletions = [
     }
   },
   {
-    label: 'sti',
+    label: 'si',
     detail: 'Insert setInterval function',
     insertText: {
       value: 'setInterval(() => {\n\t$0\n}, ${1:interval})'
