@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>opiumJS</title>
     <style>
+      :root {
+        --output-background: #131314;
+      }
+
       * {
         box-sizing: border-box;
       }
@@ -14,17 +18,21 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
+        background-image: linear-gradient(
+          to right,
+          transparent 55vw,
+          var(--output-background) 200px,
+          var(--output-background)
+        );
       }
 
       header {
         height: 24px;
         padding-top: 4px;
         padding-right: 10px;
-        background-image: linear-gradient(
-          to right, transparent 55vw, #131314 200px, #131314
-        );
-        color: #777;
-        font-family: monospace;
+        color: #4f4f55;
+        font-family: 'Menlo', monospace;
+        font-size: 12px;
         text-align: right;
         user-select: none;
         -webkit-app-region: drag;
@@ -47,7 +55,7 @@
       #output .monaco-editor,
       #output .monaco-editor-background,
       #output .monaco-editor .margin {
-        background-color: #131314;
+        background-color: var(--output-background);
       }
 
       #output .monaco-editor .cursor {
@@ -113,7 +121,7 @@
       self.module = undefined;
       self.process.browser = true;
 
-      require('./editor.js')
+      require('./editor')
     </script>
   </body>
 </html>

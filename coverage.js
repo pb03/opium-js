@@ -35,11 +35,10 @@ const converage = code => {
   }
 
   opmLineNos.forEach(lineNo => {
-    const obj = {
+    lines.push({
       range: new monaco.Range(lineNo, 1, lineNo, 1),
       options: { linesDecorationsClassName: 'dotDecoration' }
-    }
-    lines.push(obj)
+    })
   })
 
   return { lines, errorMessage }

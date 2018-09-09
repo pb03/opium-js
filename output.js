@@ -7,13 +7,21 @@ const output = code => {
     return code.toString()
   }
 
-  const depth = opmIsCyclic(code) ? 0 : 100
+  // If cyclic, ignore nested objects
+  const depth = isCyclic(code) ? 0 : 100
+
+  // If output is less than 55 characters long,
+  // log it in one line
   const isCompact = Array.isArray(code) && inspect(code).length < 55
 
-  return inspect(code, { compact: isCompact, depth: depth, breakLength: Infinity })
+  return inspect(code, {
+    compact: isCompact,
+    depth: depth,
+    breakLength: Infinity
+  })
 }
 
-const opmIsCyclic = obj => {
+const isCyclic = obj => {
   let seenObjects = []
 
   function detect (obj) {

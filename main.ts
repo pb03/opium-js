@@ -1,12 +1,13 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, Menu } from 'electron'
+const menuTemplate = require('./menuTemplate')
 
 let mainWindow
 
-function createWindow () {
+const createMainWindow = () => {
   mainWindow = new BrowserWindow({
     width: 1140,
     height: 680,
-    backgroundColor: '#171717',
+    backgroundColor: '#161618',
     titleBarStyle: 'hidden'
   })
 
@@ -16,12 +17,38 @@ function createWindow () {
     mainWindow = null
   })
 
-  // mainWindow.openDevTools()
-
-  require('./menu')
+  setAppMenu()
 }
 
-app.on('ready', createWindow)
+const setAppMenu = () => {
+  menuTemplate.push({
+    role: 'help',
+    submenu: [
+      {
+        label: 'Keyboard Shortcuts',
+        click () { createHelpWindow() }
+      }
+    ]
+  })
+
+  const menu = Menu.buildFromTemplate(menuTemplate)
+  Menu.setApplicationMenu(menu)
+}
+
+const createHelpWindow = () => {
+  let helpWindow = new BrowserWindow({
+    parent: mainWindow,
+    modal: true,
+    width: 480,
+    height: 330,
+    backgroundColor: '#101011',
+    resizable: false
+  })
+
+  helpWindow.loadURL('file://' + __dirname + '/help.html')
+}
+
+app.on('ready', createMainWindow)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -33,6 +60,6 @@ app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
-    createWindow()
+    createMainWindow()
   }
 })
