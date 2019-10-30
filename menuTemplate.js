@@ -22,10 +22,8 @@ const menuTemplate = [
 ]
 
 if (process.platform === 'darwin') {
-  const name = app.getName()
-
   menuTemplate.unshift({
-    label: name,
+    label: app.name,
     submenu: [
       { role: 'about' },
       { type: 'separator' },

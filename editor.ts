@@ -6,8 +6,10 @@ const output = require('./output')
 const coverage = require('./coverage')
 const autoCompletions = require('./autoCompletions')
 
-let monacoInput: monaco.editor.IStandaloneCodeEditor
-let monacoOutput: monaco.editor.IStandaloneCodeEditor
+type Editor = monaco.editor.IStandaloneCodeEditor
+
+let monacoInput: Editor
+let monacoOutput: Editor
 
 const monacoOptions = {
   language: 'javascript',
@@ -22,80 +24,80 @@ const monacoOptions = {
   }
 }
 
-let coverageDots
+let coverageDots = []
 let coverageLines = []
 let errorHighlights = []
 
 const initMonacoInput = () => {
-    monacoInput = monaco.editor.create(document.getElementById('input'), {
-      ...monacoOptions,
-      value: localStorage.getItem('code') || '',
-      fontSize: 13,
-      lineHeight: 24,
-      renderLineHighlight: 'none',
-      multiCursorModifier: 'ctrlCmd'
-    })
+  monacoInput = monaco.editor.create(document.getElementById('input'), {
+    ...monacoOptions,
+    value: localStorage.getItem('code') || '',
+    fontSize: 13,
+    lineHeight: 24,
+    renderLineHighlight: 'none',
+    multiCursorModifier: 'ctrlCmd'
+  })
 
-    monacoInput.focus()
+  monacoInput.focus()
 
-    monacoInput.getModel().updateOptions({ tabSize: 2 })
+  monacoInput.getModel().updateOptions({ tabSize: 2 })
 
-    monacoInput.addAction({
-      id: 'run-function',
-      label: 'Run',
+  monacoInput.addAction({
+    id: 'run-function',
+    label: 'Run',
 
-      keybindings: [
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_R
-      ],
+    keybindings: [
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_R
+    ],
 
-      run: ed => {
-        const code = ed.getValue()
+    run: (editor: Editor) => {
+      const code: string = editor.getValue()
 
-        clearCoverageDots()
+      clearCoverageDots()
 
-        try {
-          eval(code)
-        } catch (err) {
-          opmAppendOutput(err, true)
-        }
+      try {
+        eval(code)
+      } catch (error) {
+        opmAppendOutput(error, true)
       }
-    })
+    }
+  })
 
-    monacoInput.addAction({
-      id: 'code-coverage',
-      label: 'Code coverage',
+  monacoInput.addAction({
+    id: 'code-coverage',
+    label: 'Code coverage',
 
-      keybindings: [
-        monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_R
-      ],
+    keybindings: [
+      monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_R
+    ],
 
-      run: ed => {
-        const code = ed.getValue()
+    run: (editor: Editor) => {
+      const code = editor.getValue()
 
-        clearCoverageDots()
+      clearCoverageDots()
 
-        const { lines, errorMessage } = coverage(code)
-        coverageLines = lines
-        coverageDots = monacoInput.deltaDecorations([], coverageLines)
+      const { lines, errorMessage } = coverage(code)
+      coverageLines = lines
+      coverageDots = monacoInput.deltaDecorations([], coverageLines)
 
-        if (errorMessage) {
-          opmAppendOutput(errorMessage, true)
-        }
+      if (errorMessage) {
+        opmAppendOutput(errorMessage, true)
       }
-    })
+    }
+  })
 
-    monacoInput.addAction({
-      id: 'clear-output',
-      label: 'Clear output',
+  monacoInput.addAction({
+    id: 'clear-output',
+    label: 'Clear output',
 
-      keybindings: [
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_K
-      ],
+    keybindings: [
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_K
+    ],
 
-      run: () => {
-        monacoOutput.setValue('')
-        errorHighlights = []
-      }
+    run: () => {
+      monacoOutput.setValue('')
+      errorHighlights = []
+    }
   })
 
   monacoInput.addAction({
@@ -106,8 +108,8 @@ const initMonacoInput = () => {
       monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_S
     ],
 
-    run: ed => {
-      localStorage.setItem('code', ed.getValue())
+    run: (editor: Editor) => {
+      localStorage.setItem('code', editor.getValue())
     }
   })
 }
@@ -126,11 +128,11 @@ const initMonacoOutput = () => {
   monacoOutput.getModel().updateOptions({ tabSize: 2 })
 }
 
-console.log = code => {
+console.log = (code: string) => {
   opmAppendOutput(output(code), false)
 }
 
-const opmAppendOutput = (code, isError) => {
+const opmAppendOutput = (code: string, isError: boolean) => {
   const updatedValue = monacoOutput.getValue() + code + '\n\n'
   const totalLines = (updatedValue.match(/\n/gm) || []).length
 
@@ -144,7 +146,7 @@ const opmAppendOutput = (code, isError) => {
   monacoOutput.deltaDecorations([], errorHighlights)
 }
 
-const appendErrorHighlight = lineNo => {
+const appendErrorHighlight = (lineNo: number) => {
   errorHighlights.push({
     range: new monaco.Range(lineNo, 1, lineNo, 100),
     options: { inlineClassName: 'inlineDecoration' }
