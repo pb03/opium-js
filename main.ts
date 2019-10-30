@@ -8,10 +8,13 @@ const createMainWindow = () => {
     width: 1140,
     height: 680,
     backgroundColor: '#161618',
-    titleBarStyle: 'hidden'
+    titleBarStyle: 'hidden',
+    webPreferences: {
+      nodeIntegration: true
+    }
   })
 
-  mainWindow.loadURL('file://' + __dirname + '/index.html')
+  mainWindow.loadURL(`file://${__dirname}/index.html`)
 
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -26,14 +29,14 @@ const setAppMenu = () => {
     submenu: [
       {
         label: 'Keyboard Shortcuts',
-        click () { createHelpWindow() }
+        click() { createHelpWindow() }
       },
       {
         type: 'separator'
       },
       {
         label: 'Learn More',
-        click () { shell.openExternal('https://github.com/pb03/opium-js') }
+        click() { shell.openExternal('https://github.com/pb03/opium-js') }
       }
     ]
   })
@@ -52,7 +55,7 @@ const createHelpWindow = () => {
     resizable: false
   })
 
-  helpWindow.loadURL('file://' + __dirname + '/help.html')
+  helpWindow.loadURL(`file://${__dirname}/help.html`)
 }
 
 app.on('ready', createMainWindow)
