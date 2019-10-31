@@ -3,8 +3,8 @@
 declare const amdRequire
 const theme = require('./theme')
 const output = require('./output')
-const coverage = require('./coverage')
 const autoCompletions = require('./autoCompletions')
+const instrument = require('./instrument')
 
 type Editor = monaco.editor.IStandaloneCodeEditor
 
@@ -55,9 +55,8 @@ const initMonacoInput = () => {
 
       clearCoverageDots()
 
-      try {
-        eval(code)
-      } catch (error) {
+      const { error } = instrument(code)
+      if (error) {
         opmAppendOutput(error, true)
       }
     }
@@ -73,15 +72,14 @@ const initMonacoInput = () => {
 
     run: (editor: Editor) => {
       const code = editor.getValue()
-
       clearCoverageDots()
 
-      const { lines, errorMessage } = coverage(code)
+      const { lines, error } = instrument(code)
       coverageLines = lines
       coverageDots = monacoInput.deltaDecorations([], coverageLines)
 
-      if (errorMessage) {
-        opmAppendOutput(errorMessage, true)
+      if (error) {
+        opmAppendOutput(error, true)
       }
     }
   })
