@@ -3,8 +3,8 @@
 declare const amdRequire
 const theme = require('./theme')
 const output = require('./output')
-const coverage = require('./coverage')
 const autoCompletions = require('./autoCompletions')
+const instrument = require('./instrument')
 
 type Editor = monaco.editor.IStandaloneCodeEditor
 
@@ -24,9 +24,21 @@ const monacoOptions = {
   }
 }
 
-let coverageDots = []
-let coverageLines = []
-let errorHighlights = []
+const visualState = {
+  editor: {
+    isDirty: false,
+    coverageDots: [],
+    clear () {
+      this.coverageDots = []
+    }
+  },
+  console: {
+    errorHighlights: [],
+    clear () {
+      this.errorHighlights = []
+    },
+  },
+}
 
 const initMonacoInput = () => {
   monacoInput = monaco.editor.create(document.getElementById('input'), {
@@ -55,9 +67,8 @@ const initMonacoInput = () => {
 
       clearCoverageDots()
 
-      try {
-        eval(code)
-      } catch (error) {
+      const { error } = instrument(code)
+      if (error) {
         opmAppendOutput(error, true)
       }
     }
@@ -73,15 +84,14 @@ const initMonacoInput = () => {
 
     run: (editor: Editor) => {
       const code = editor.getValue()
-
       clearCoverageDots()
 
-      const { lines, errorMessage } = coverage(code)
-      coverageLines = lines
-      coverageDots = monacoInput.deltaDecorations([], coverageLines)
+      const { lines, error } = instrument(code)
+      visualState.editor.coverageDots = monacoInput.deltaDecorations([], lines)
+      visualState.editor.isDirty = false
 
-      if (errorMessage) {
-        opmAppendOutput(errorMessage, true)
+      if (error) {
+        opmAppendOutput(error, true)
       }
     }
   })
@@ -96,7 +106,7 @@ const initMonacoInput = () => {
 
     run: () => {
       monacoOutput.setValue('')
-      errorHighlights = []
+      visualState.console.clear()
     }
   })
 
@@ -111,6 +121,18 @@ const initMonacoInput = () => {
     run: (editor: Editor) => {
       localStorage.setItem('code', editor.getValue())
     }
+  })
+
+  /**
+   * Cleaning up coverage dots, when content changes. Method is noop, when `isDirty=true`.
+   */
+  monacoInput.onDidChangeModelContent(() => {
+    if (visualState.editor.isDirty) {
+      return
+    }
+
+    clearCoverageDots()
+    visualState.editor.isDirty = true
   })
 }
 
@@ -143,20 +165,19 @@ const opmAppendOutput = (code: string, isError: boolean) => {
     appendErrorHighlight(totalLines - 1)
   }
 
-  monacoOutput.deltaDecorations([], errorHighlights)
+  monacoOutput.deltaDecorations([], visualState.console.errorHighlights)
 }
 
 const appendErrorHighlight = (lineNo: number) => {
-  errorHighlights.push({
+  visualState.console.errorHighlights.push({
     range: new monaco.Range(lineNo, 1, lineNo, 100),
     options: { inlineClassName: 'inlineDecoration' }
   })
 }
 
 const clearCoverageDots = () => {
-  if (coverageLines.length) {
-    monacoInput.deltaDecorations(coverageDots, [])
-  }
+  monacoInput.deltaDecorations(visualState.editor.coverageDots, [])
+  visualState.editor.clear()
 }
 
 amdRequire(['vs/editor/editor.main'], () => {

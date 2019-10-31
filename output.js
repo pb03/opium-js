@@ -4,7 +4,14 @@ const output = code => {
   if (code === console.log) return
 
   if (typeof code === 'function') {
-    return code.toString()
+    /**
+     * Instanbul alters the input code and adds `cov` statements to know if
+     * a function is executed or not. We need to trim them off, when
+     * logging the function to console.
+     */
+    return code.toString().split('\n').filter((line) => {
+      return !line.trim().startsWith('cov')
+    }).join('\n')
   }
 
   // If cyclic, ignore nested objects

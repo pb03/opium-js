@@ -41,6 +41,7 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
+    "istanbul-lib-instrument": "^3.3.0",
     "monaco-editor": "^0.14.3"
   }
 }
