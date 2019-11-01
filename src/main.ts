@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Menu, shell } from 'electron'
-const menuTemplate = require('./menuTemplate')
+const menuTemplate = require('./menu')
 
-let mainWindow
+let mainWindow: Electron.BrowserWindow
 
 const createMainWindow = () => {
   mainWindow = new BrowserWindow({
@@ -19,6 +19,8 @@ const createMainWindow = () => {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  // mainWindow.webContents.openDevTools()
 
   setAppMenu()
 }

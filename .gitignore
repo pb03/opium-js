@@ -1,7 +1,5 @@
 /dist
 /node_modules
 **/.DS_Store
-editor.js
-editor.js.map
-main.js
-main.js.map
+*.js
+*.js.map

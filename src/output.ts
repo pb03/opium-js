@@ -1,6 +1,6 @@
 const { inspect } = require('util')
 
-const output = code => {
+const output = (code: any) => {
   if (code === console.log) return
 
   if (typeof code === 'function') {
@@ -9,17 +9,17 @@ const output = code => {
      * a function is executed or not. We need to trim them off, when
      * logging the function to console.
      */
-    return code.toString().split('\n').filter((line) => {
+    return code.toString().split('\n').filter((line: string) => {
       return !line.trim().startsWith('cov')
     }).join('\n')
   }
 
   // If cyclic, ignore nested objects
-  const depth = isCyclic(code) ? 0 : 100
+  const depth: number = isCyclic(code) ? 0 : 100
 
   // If output is less than 55 characters long,
   // log it in one line
-  const isCompact = Array.isArray(code) && inspect(code).length < 55
+  const isCompact: boolean = Array.isArray(code) && inspect(code).length < 55
 
   return inspect(code, {
     compact: isCompact,
@@ -31,13 +31,13 @@ const output = code => {
 const isCyclic = obj => {
   let seenObjects = []
 
-  function detect (obj) {
+  function detect(obj) {
     if (obj && typeof obj === 'object') {
       if (seenObjects.indexOf(obj) !== -1) {
         return true
       }
       seenObjects.push(obj)
-      for (var key in obj) {
+      for (let key in obj) {
         if (obj.hasOwnProperty(key) && detect(obj[key])) {
           return true
         }

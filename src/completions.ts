@@ -1,4 +1,4 @@
-var autoCompletions = [
+const completions = [
   {
     label: 'fore',
     detail: 'Insert forEach statement',
@@ -85,4 +85,4 @@ var autoCompletions = [
   }
 ]
 
-module.exports = autoCompletions
+module.exports = completions
