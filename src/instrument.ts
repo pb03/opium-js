@@ -1,7 +1,7 @@
 const istanbul = require('istanbul-lib-instrument')
 const instrumenter = istanbul.createInstrumenter({ noAutoWrap: true, compact: false })
 
-module.exports = function instrument (code) {
+module.exports = function instrument(code) {
   const filename = `f-${new Date().getTime()}`
   let evalError = null
 
@@ -25,8 +25,9 @@ module.exports = function instrument (code) {
    * An array of executed and lines.
    */
   const executedLines = []
-
+  // @ts-ignore
   const statementsMap = __coverage__[filename]['statementMap']
+  // @ts-ignore
   const statementsIterations = __coverage__[filename]['s']
 
   Object.keys(statementsIterations).forEach((index) => {

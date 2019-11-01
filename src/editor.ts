@@ -1,9 +1,9 @@
-/// <reference path="node_modules/monaco-editor/monaco.d.ts" />
+/// <reference path="../node_modules/monaco-editor/monaco.d.ts" />
 
 declare const amdRequire
-const theme = require('./theme')
-const output = require('./output')
-const autoCompletions = require('./autoCompletions')
+const afeemTheme = require('./theme')
+const getOutput = require('./output')
+const autoCompletions = require('./completions')
 const instrument = require('./instrument')
 
 type Editor = monaco.editor.IStandaloneCodeEditor
@@ -28,13 +28,13 @@ const visualState = {
   editor: {
     isDirty: false,
     coverageDots: [],
-    clear () {
+    clear() {
       this.coverageDots = []
     }
   },
   console: {
     errorHighlights: [],
-    clear () {
+    clear() {
       this.errorHighlights = []
     },
   },
@@ -151,7 +151,7 @@ const initMonacoOutput = () => {
 }
 
 console.log = (code: string) => {
-  opmAppendOutput(output(code), false)
+  opmAppendOutput(getOutput(code), false)
 }
 
 const opmAppendOutput = (code: string, isError: boolean) => {
@@ -181,7 +181,7 @@ const clearCoverageDots = () => {
 }
 
 amdRequire(['vs/editor/editor.main'], () => {
-  monaco.editor.defineTheme('afeemTheme', theme)
+  monaco.editor.defineTheme('afeemTheme', afeemTheme)
 
   monaco.languages.registerCompletionItemProvider('javascript', {
     provideCompletionItems: () => autoCompletions
