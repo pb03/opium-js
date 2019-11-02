@@ -1,10 +1,10 @@
-import { app, BrowserWindow, Menu, shell } from 'electron'
+import { app, BrowserWindow, Menu } from 'electron'
 const menuTemplate = require('./menu')
 
-let mainWindow: Electron.BrowserWindow
+let appWindow: Electron.BrowserWindow
 
-const createMainWindow = () => {
-  mainWindow = new BrowserWindow({
+const createAppWindow = () => {
+  appWindow = new BrowserWindow({
     width: 1140,
     height: 680,
     backgroundColor: '#161618',
@@ -14,53 +14,19 @@ const createMainWindow = () => {
     }
   })
 
-  mainWindow.loadURL(`file://${__dirname}/index.html`)
+  appWindow.loadURL(`file://${__dirname}/index.html`)
 
-  mainWindow.on('closed', () => {
-    mainWindow = null
+  appWindow.on('closed', () => {
+    appWindow = null
   })
 
-  // mainWindow.webContents.openDevTools()
+  // appWindow.webContents.openDevTools()
 
-  setAppMenu()
+  const appMenu = Menu.buildFromTemplate(menuTemplate)
+  Menu.setApplicationMenu(appMenu)
 }
 
-const setAppMenu = () => {
-  menuTemplate.push({
-    role: 'help',
-    submenu: [
-      {
-        label: 'Keyboard Shortcuts',
-        click() { createHelpWindow() }
-      },
-      {
-        type: 'separator'
-      },
-      {
-        label: 'Learn More',
-        click() { shell.openExternal('https://github.com/pb03/opium-js') }
-      }
-    ]
-  })
-
-  const menu = Menu.buildFromTemplate(menuTemplate)
-  Menu.setApplicationMenu(menu)
-}
-
-const createHelpWindow = () => {
-  let helpWindow = new BrowserWindow({
-    parent: mainWindow,
-    modal: true,
-    width: 480,
-    height: 330,
-    backgroundColor: '#101011',
-    resizable: false
-  })
-
-  helpWindow.loadURL(`file://${__dirname}/help.html`)
-}
-
-app.on('ready', createMainWindow)
+app.on('ready', createAppWindow)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -71,7 +37,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createMainWindow()
+  if (appWindow === null) {
+    createAppWindow()
   }
 })

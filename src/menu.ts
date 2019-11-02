@@ -1,4 +1,4 @@
-const { app } = require('electron')
+const { app, shell } = require('electron')
 
 const menuTemplate = [
   {
@@ -17,6 +17,15 @@ const menuTemplate = [
       { role: 'close' },
       { role: 'minimize' },
       { role: 'zoom' }
+    ]
+  },
+  {
+    role: 'help',
+    submenu: [
+      {
+        label: 'Github repo',
+        click() { shell.openExternal('https://github.com/pb03/opium-js') }
+      }
     ]
   }
 ]
