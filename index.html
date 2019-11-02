@@ -5,6 +5,13 @@
   <meta charset="UTF-8">
   <title>opiumJS</title>
   <style>
+    @font-face {
+      font-family: 'Cascadia Code';
+      src: url('./assets/fonts/CascadiaCode.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
     :root {
       --output-background: #131314;
     }
@@ -23,6 +30,7 @@
           transparent 55vw,
           var(--output-background) 200px,
           var(--output-background));
+      -webkit-font-smoothing: antialiased;
     }
 
     header {
@@ -30,8 +38,8 @@
       padding-top: 4px;
       padding-right: 10px;
       color: #4f4f55;
-      font-family: 'Menlo', monospace;
-      font-size: 12px;
+      font-family: 'Cascadia Code', 'Menlo', monospace;
+      font-size: 13px;
       text-align: right;
       user-select: none;
       -webkit-app-region: drag;
@@ -62,7 +70,7 @@
     }
 
     .inlineDecoration {
-      background-color: #d44646;
+      background-color: #bd3c4d;
       color: #eee !important;
       padding-top: 1px;
       padding-bottom: 1px;
@@ -176,7 +184,7 @@
       margin: 0;
       font-family: 'Helvetica Neue', sans-serif;
       font-weight: 300;
-      font-size: 15px;
+      font-size: 14px;
       letter-spacing: 0.5px;
       color: #fff;
     }
