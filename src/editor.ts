@@ -67,12 +67,14 @@ const initMonacoInput = () => {
     run: (editor: Editor) => {
       const code: string = editor.getValue()
 
-      clearCoverageDots()
+      editor.getAction('editor.action.formatDocument').run()
 
       const { error } = instrument(code)
       if (error) {
         opmAppendOutput(error, true)
       }
+
+      clearCoverageDots()
     }
   })
 
