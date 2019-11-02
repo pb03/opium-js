@@ -16,6 +16,8 @@ const monacoOptions = {
   automaticLayout: true,
   folding: true,
   theme: 'afeemTheme',
+  fontFamily: 'Cascadia Code, Menlo, serif',
+  fontLigatures: true,
   contextmenu: false,
   minimap: { enabled: false },
   scrollbar: {
@@ -44,7 +46,7 @@ const initMonacoInput = () => {
   monacoInput = monaco.editor.create(document.getElementById('input'), {
     ...monacoOptions,
     value: localStorage.getItem('code') || '',
-    fontSize: 13,
+    fontSize: 14,
     lineHeight: 24,
     renderLineHighlight: 'none',
     multiCursorModifier: 'ctrlCmd'
@@ -140,7 +142,7 @@ const initMonacoOutput = () => {
   monacoOutput = monaco.editor.create(document.getElementById('output'), {
     ...monacoOptions,
     lineNumbers: 'off',
-    fontSize: 12,
+    fontSize: 13,
     lineHeight: 21,
     readOnly: true,
     matchBrackets: false,
