@@ -89,6 +89,98 @@
       border-radius: 50%;
     }
 
+    .help {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: block;
+      color: #fff;
+      font-size: 20px;
+      padding: 7px 4px;
+    }
+
+    .help__icon {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .bulb-glow {
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .help__icon:hover .bulb-glow,
+    .help-visible .bulb-glow {
+      opacity: 1;
+    }
+
+    .help__icon:hover g,
+    .help-visible .help__icon g {
+      fill: #ccc;
+    }
+
+    .help__popup {
+      position: absolute;
+      right: 25px;
+      bottom: 25px;
+      height: 205px;
+      width: 330px;
+      padding: 25px;
+      border-radius: 6px;
+      background-color: rgba(10, 10, 10, 0.9);
+      opacity: 0;
+      transform: scale(0.96);
+      transform-origin: bottom right;
+      visibility: hidden;
+      transition: opacity 0.1s, transform 0.1s, visibility 0.1s;
+    }
+
+    .help-visible .help__popup {
+      opacity: 1;
+      transform: none;
+      visibility: visible;
+    }
+
+    .help__close {
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      color: #d4d4d4;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .help__commands {
+      display: grid;
+      grid-template-columns: 125px auto;
+      row-gap: 10px;
+    }
+
+    .help__commands__key {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 28px;
+      height: 28px;
+      font-family: 'Arial', sans-serif;
+      font-size: 13px;
+      color: #efeff5;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+    }
+
+    .help__commands__description {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-weight: 300;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
   </style>
 </head>
 
@@ -98,9 +190,53 @@
   <div class="container">
     <div id="input"></div>
     <div id="output"></div>
+    <div id="help" class="help">
+      <div id="help-trigger" class="help__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <g fill="#555">
+            <path
+              d="M338.6 136.1c-23.6-22.7-54.6-34.4-87.4-33.2-62.9 2.5-114.2 55.7-114.4 118.7-.1 27.9 9.7 55.1 27.6 76.5 25.8 31 40 70.1 40 110.2 0 0-2.7 18.4 10.4 18.4h82.4c13.4 0 10.4-18.4 10.4-18.4 0-39.2 14.4-78 41.7-112.2 16.9-21.3 25.9-46.9 25.9-74.1 0-32.7-13-63.3-36.6-85.9zm-5.6 147c-29.7 37.2-45.6 79.6-46.2 122.8h-61.6c-.6-44.1-16.4-87-44.8-121.1-14.7-17.7-22.8-40.1-22.7-63.1.2-52 42.5-95.9 94.4-98 27.1-1 52.7 8.7 72.1 27.4 19.5 18.7 30.2 43.9 30.2 70.9-.1 22.5-7.4 43.6-21.4 61.1zM297.6 440.9h-83.2c-5.8 0-10.4 4.7-10.4 10.4 0 5.8 4.7 10.4 10.4 10.4h83.2c5.8 0 10.4-4.7 10.4-10.4s-4.7-10.4-10.4-10.4zM281.9 480.1h-51.7c-5.8 0-10.4 4.7-10.4 10.4 0 5.8 4.7 10.4 10.4 10.4h51.7c5.8 0 10.4-4.7 10.4-10.4s-4.7-10.4-10.4-10.4z" />
+            <g class="bulb-glow">
+              <path
+                d="M393.2 67.8c-4.1-4.1-10.7-4.1-14.7 0l-25.4 25.4c-4.1 4.1-4.1 10.7 0 14.7s10.7 4.1 14.7 0l25.4-25.4c4.1-4 4.1-10.6 0-14.7zM256 67.7c5.8 0 10.4-4.7 10.4-10.4V21.4c0-5.8-4.7-10.4-10.4-10.4s-10.4 4.7-10.4 10.4v35.9c0 5.8 4.6 10.4 10.4 10.4zM158.9 108c4.1-4.1 4.1-10.7 0-14.7l-25.4-25.4c-4.1-4.1-10.7-4.1-14.7 0s-4.1 10.7 0 14.7l25.4 25.4c4.1 4 10.7 4 14.7 0zM439.6 194.6h-35.9c-5.8 0-10.4 4.7-10.4 10.4s4.7 10.4 10.4 10.4h35.9c5.8 0 10.4-4.7 10.4-10.4s-4.7-10.4-10.4-10.4zM108.3 194.6H72.4c-5.8 0-10.4 4.7-10.4 10.4s4.7 10.4 10.4 10.4h35.9c5.8 0 10.4-4.7 10.4-10.4s-4.6-10.4-10.4-10.4z" />
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="help__popup">
+        <span id="close-help" class="help__close">✕</span>
+        <section class="help__commands">
+          <div>
+            <span class="help__commands__key">⌘</span>
+            <span class="help__commands__key">R</span>
+          </div>
+          <p class="help__commands__description">Run snippet</p>
+          <div>
+            <span class="help__commands__key">⌘</span>
+            <span class="help__commands__key">K</span>
+          </div>
+          <p class="help__commands__description">Clear output</p>
+          <div>
+            <span class="help__commands__key">⌘</span>
+            <span class="help__commands__key">⇧</span>
+            <span class="help__commands__key">S</span>
+          </div>
+          <p class="help__commands__description">Save current snippet</p>
+          <div>
+            <span class="help__commands__key">⌘</span>
+            <span class="help__commands__key">⇧</span>
+            <span class="help__commands__key">R</span>
+          </div>
+          <p class="help__commands__description">Run snippet and show code coverage</p>
+        </section>
+      </div>
+    </div>
   </div>
 
   <script>
+    /**
+     * Load editor
+     */
     const path = require('path')
     const amdLoader = require('./node_modules/monaco-editor/min/vs/loader.js')
     const amdRequire = amdLoader.require
@@ -119,6 +255,25 @@
 
     self.module = undefined
     require('./editor')
+
+    /**
+     * Keyboard shortcuts help popup
+     */
+    const $help = document.getElementById('help')
+    const $helpTrigger = document.getElementById('help-trigger')
+    const $closeHelp = document.getElementById('close-help')
+
+    $helpTrigger.addEventListener('click', () => {
+      $help.classList.toggle('help-visible')
+    })
+    $closeHelp.addEventListener('click', () => {
+      $help.classList.remove('help-visible')
+    })
+    document.addEventListener('keyup', e => {
+      if (e.keyCode === 27) {
+        $help.classList.remove('help-visible')
+      }
+    })
   </script>
 </body>
 
