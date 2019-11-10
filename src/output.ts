@@ -29,22 +29,12 @@ const output = (code: any) => {
 }
 
 const isCyclic = obj => {
-  let seenObjects = []
-
-  function detect(obj) {
-    if (obj && typeof obj === 'object') {
-      if (seenObjects.indexOf(obj) !== -1) {
-        return true
-      }
-      seenObjects.push(obj)
-      for (let key in obj) {
-        if (obj.hasOwnProperty(key) && detect(obj[key])) {
-          return true
-        }
-      }
-    }
+  try {
+    JSON.stringify(obj)
+  } catch (error) {
+    return error.message.includes('Converting circular structure to JSON')
   }
-  return detect(obj)
+  return false
 }
 
 module.exports = output

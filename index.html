@@ -20,6 +20,10 @@
       box-sizing: border-box;
     }
 
+    html {
+      overflow: hidden;
+    }
+
     body {
       width: 100%;
       height: 100vh;
@@ -34,14 +38,13 @@
     }
 
     header {
+      display: flex;
+      justify-content: flex-end;
       height: 24px;
-      padding-top: 4px;
-      padding-right: 10px;
-      color: #4f4f55;
-      font-family: 'Cascadia Code', 'Menlo', monospace;
-      font-size: 13px;
-      text-align: right;
+      padding-top: 6px;
+      padding-right: 6px;
       user-select: none;
+      font-family: 'Cascadia Code', 'Menlo', monospace;
       -webkit-app-region: drag;
     }
 
@@ -97,14 +100,175 @@
       border-radius: 50%;
     }
 
+    .package__add {
+      position: relative;
+      background-color: transparent;
+      padding: 0 4px;
+      border: 1px solid #646469;
+      height: 17px;
+      width: 17px;
+      display: block;
+      cursor: pointer;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .package__add::before {
+      content: '✕';
+      display: block;
+      transform: rotate(45deg);
+      color: #646469;
+      line-height: 13px;
+      font-size: 13px;
+    }
+
+    .package__add:hover,
+    .popup-visible .package__add {
+      border-color: #F8D163;
+      background-color: rgba(248, 208, 99, 0.15);
+    }
+
+    .package__add:hover::before,
+    .popup-visible .package__add::before {
+      color: #F8D163;
+    }
+
+    .package__popup {
+      position: absolute;
+      right: 5px;
+      top: 30px;
+      z-index: 1;
+      width: 340px;
+      padding: 15px 20px;
+      border-radius: 6px;
+      background-color: rgba(10, 10, 10, 0.9);
+      text-align: left;
+      opacity: 0;
+      transform: scale(0.96);
+      transform-origin: top right;
+      visibility: hidden;
+      transition: opacity 0.05s, transform 0.05s, visibility 0.05s;
+    }
+
+    .package__popup__title {
+      color: #e8e8e8;
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .package__popup__description {
+      color: #8a8888;
+      font-size: 12px;
+      margin: 4px 0 15px;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
+    }
+
+    .package__close {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      color: #8e8e8e;
+      font-family: serif;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .package__close:hover {
+      color: #d4d4d4;
+    }
+
+    .popup-visible .package__popup {
+      opacity: 1;
+      transform: none;
+      visibility: visible;
+    }
+
+    .package__form {
+      position: relative;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .input-block {
+      display: flex;
+    }
+
+    .package__input {
+      width: 100%;
+      padding: 10px;
+      border: 0;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 12px;
+      background-color: #f3f3f3;
+      outline: none;
+    }
+
+    .package__list {
+      position: absolute;
+      top: 25px;
+      left: 0;
+      width: 100%;
+      max-height: 250px;
+      padding: 0;
+      border-radius: 6px;
+      background-color: #f3f3f3;
+      text-align: left;
+      font-size: 14px;
+      list-style: none;
+      overflow: auto;
+    }
+
+    .package__list-item {
+      color: #444444;
+      padding: 8px 0;
+      padding-left: 15px;
+      list-style-position: inside;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      outline: none;
+    }
+
+    .package__list-item.is-active {
+      background-color: rgba(248, 208, 99, 0.2);
+    }
+
+    .loaded-list {
+      list-style: none;
+      color: #d0d0d0;
+      text-align: left;
+      padding: 0;
+      margin: 15px 0 0;
+      font-size: 12px;
+    }
+
+    .loaded-list__item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .loaded-list__item svg {
+      height: 12px;
+      margin-right: 6px;
+    }
+
     .help {
       position: absolute;
       right: 0;
       bottom: 0;
-      display: block;
-      color: #fff;
-      font-size: 20px;
+      display: flex;
+      align-items: center;
       padding: 7px 4px;
+    }
+
+    .opium-text {
+      color: #4b4b50;
+      font-family: 'Cascadia Code', 'Menlo', monospace;
+      font-size: 13px;
+      margin-top: 3px;
+      margin-right: 4px;
     }
 
     .help__icon {
@@ -119,32 +283,32 @@
     }
 
     .help__icon:hover .bulb-glow,
-    .help-visible .bulb-glow {
+    .popup-visible .bulb-glow {
       opacity: 1;
     }
 
     .help__icon:hover g,
-    .help-visible .help__icon g {
+    .popup-visible .help__icon g {
       fill: #ccc;
     }
 
     .help__popup {
       position: absolute;
-      right: 25px;
-      bottom: 25px;
-      height: 205px;
-      width: 330px;
-      padding: 25px;
+      right: 5px;
+      bottom: 32px;
+      height: 196px;
+      width: 315px;
+      padding: 22px;
       border-radius: 6px;
       background-color: rgba(10, 10, 10, 0.9);
       opacity: 0;
       transform: scale(0.96);
       transform-origin: bottom right;
       visibility: hidden;
-      transition: opacity 0.1s, transform 0.1s, visibility 0.1s;
+      transition: opacity 0.05s, transform 0.05s, visibility 0.05s;
     }
 
-    .help-visible .help__popup {
+    .popup-visible .help__popup {
       opacity: 1;
       transform: none;
       visibility: visible;
@@ -154,15 +318,20 @@
       position: absolute;
       top: 12px;
       right: 15px;
-      color: #d4d4d4;
+      color: #8e8e8e;
       font-size: 16px;
       cursor: pointer;
     }
 
+    .help__close:hover {
+      color: #d4d4d4;
+    }
+
     .help__commands {
       display: grid;
-      grid-template-columns: 125px auto;
+      grid-template-columns: 115px auto;
       row-gap: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
     }
 
     .help__commands__key {
@@ -171,7 +340,6 @@
       align-items: center;
       width: 28px;
       height: 28px;
-      font-family: 'Arial', sans-serif;
       font-size: 13px;
       color: #efeff5;
       border: 1px solid rgba(255, 255, 255, 0.15);
@@ -182,23 +350,41 @@
       display: flex;
       align-items: center;
       margin: 0;
-      font-family: 'Helvetica Neue', sans-serif;
       font-weight: 300;
       font-size: 14px;
-      letter-spacing: 0.5px;
-      color: #fff;
+      color: #eaeaea;
     }
 
   </style>
 </head>
 
 <body>
-  <header>opiumJS</header>
+  <header>
+    <div id="package" class="package">
+      <span id="add-package-trigger" class="package__add"></span>
+      <div class="package__popup">
+        <h4 class="package__popup__title">Add libraries</h4>
+        <p class="package__popup__description">
+          By default it looks up for JS libraries in cdnjs, however you can enter any URL below
+          to load a library.
+        </p>
+        <span id="close-package-popup" class="package__close">✕</span>
+        <div class="package__form">
+          <form class="input-block" id="package-form">
+            <input id="package-input" class="package__input" placeholder="Type to search" />
+          </form>
+          <div id="dropdown-container"></div>
+        </div>
+        <ul class="loaded-list" id="loaded-list"></ul>
+      </div>
+    </div>
+  </header>
 
   <div class="container">
     <div id="input"></div>
     <div id="output"></div>
     <div id="help" class="help">
+      <span class="opium-text">opiumJS</span>
       <div id="help-trigger" class="help__icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
           <g fill="#555">
@@ -242,9 +428,6 @@
   </div>
 
   <script>
-    /**
-     * Load editor
-     */
     const path = require('path')
     const amdLoader = require('./node_modules/monaco-editor/min/vs/loader.js')
     const amdRequire = amdLoader.require
@@ -263,26 +446,8 @@
 
     self.module = undefined
     require('./editor')
-
-    /**
-     * Keyboard shortcuts help popup
-     */
-    const $help = document.getElementById('help')
-    const $helpTrigger = document.getElementById('help-trigger')
-    const $closeHelp = document.getElementById('close-help')
-
-    $helpTrigger.addEventListener('click', () => {
-      $help.classList.toggle('help-visible')
-    })
-    $closeHelp.addEventListener('click', () => {
-      $help.classList.remove('help-visible')
-    })
-    document.addEventListener('keyup', e => {
-      if (e.keyCode === 27) {
-        $help.classList.remove('help-visible')
-      }
-    })
   </script>
+  <script src="./ui.js" defer></script>
 </body>
 
 </html>
