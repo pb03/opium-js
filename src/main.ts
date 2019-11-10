@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu } from 'electron'
-const menuTemplate = require('./menu')
+import menuTemplate from './menu'
 
 let appWindow: Electron.BrowserWindow
 

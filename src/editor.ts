@@ -69,8 +69,14 @@ const initMonacoInput = () => {
 
       editor.getAction('editor.action.formatDocument').run()
 
-      const { error } = instrument(code)
-      if (error) {
+      // const { error } = instrument(code)
+      // if (error) {
+      //   opmAppendOutput(error, true)
+      // }
+
+      try {
+        eval(code)
+      } catch (error) {
         opmAppendOutput(error, true)
       }
 

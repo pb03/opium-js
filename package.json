@@ -1,8 +1,8 @@
 {
   "name": "opium-js",
   "productName": "opiumJS",
-  "version": "1.0.0",
-  "description": "A desktop utility app for running JS snippets",
+  "version": "1.2.0",
+  "description": "MacOS utility for running JavaScript snippets",
   "main": "main.js",
   "scripts": {
     "build": "tsc",
@@ -32,7 +32,7 @@
       ]
     },
     "directories": {
-      "buildResources": "assets",
+      "buildResources": "../assets",
       "output": "dist"
     }
   },
