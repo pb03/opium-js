@@ -1,12 +1,8 @@
 # opiumJS
 
-A desktop utility app for running JS snippets
+MacOS utility app for running JavaScript snippets
 
 ![Demo](https://github.com/pb03/opium-js/raw/master/demo.gif)
-
-## Download
-[macOS](https://github.com/pb03/opium-js/releases/download/v1.0.0/opiumJS-1.0.0.dmg)
-| Windows (releasing soon)
 
 
 ## Commands / Keyboard shortcuts
@@ -15,7 +11,7 @@ A desktop utility app for running JS snippets
 | `⌘ + R` | Run snippet |
 | `⌘ + K` | Clear output |
 | `⌘ + ⇧ + S` | Save current snippet |
-| `⌘ + ⇧ + R` | Run snippet with code coverage indicators (experimental) |
+| `⌘ + ⇧ + R` | Run snippet and show code coverage |
 
 
 ## Auto-complete code snippets
