@@ -3,8 +3,8 @@
 declare const amdRequire
 const afeemTheme = require('./theme')
 const getOutput = require('./output')
-const autoCompletions = require('./completions')
-const instrument = require('./instrument')
+const getCompletions = require('./completions')
+let instrument: any = null
 
 type Editor = monaco.editor.IStandaloneCodeEditor
 
@@ -22,8 +22,8 @@ const monacoOptions = {
   minimap: { enabled: false },
   scrollbar: {
     verticalScrollbarSize: 0,
-    horizontalScrollbarSize: 0
-  }
+    horizontalScrollbarSize: 0,
+  },
 }
 
 const visualState = {
@@ -32,7 +32,7 @@ const visualState = {
     coverageDots: [],
     clear() {
       this.coverageDots = []
-    }
+    },
   },
   console: {
     errorHighlights: [],
@@ -49,20 +49,33 @@ const initMonacoInput = () => {
     fontSize: 14,
     lineHeight: 24,
     renderLineHighlight: 'none',
-    multiCursorModifier: 'ctrlCmd'
+    multiCursorModifier: 'ctrlCmd',
   })
+
+  monacoInput.getModel().updateOptions({ tabSize: 2 })
 
   monacoInput.focus()
 
-  monacoInput.getModel().updateOptions({ tabSize: 2 })
+  // Add paste handler to bypass product service
+  monacoInput.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyV, () => {
+    const { clipboard } = require('electron')
+    const text = clipboard.readText()
+    const selection = monacoInput.getSelection()
+    const id = { major: 1, minor: 1 }
+    const op = {
+      identifier: id,
+      range: selection,
+      text: text,
+      forceMoveMarkers: true,
+    }
+    monacoInput.executeEdits('clipboard', [op])
+  })
 
   monacoInput.addAction({
     id: 'run-function',
     label: 'Run',
 
-    keybindings: [
-      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_R
-    ],
+    keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyR],
 
     run: (editor: Editor) => {
       const code: string = editor.getValue()
@@ -81,7 +94,7 @@ const initMonacoInput = () => {
       }
 
       clearCoverageDots()
-    }
+    },
   })
 
   monacoInput.addAction({
@@ -89,12 +102,17 @@ const initMonacoInput = () => {
     label: 'Code coverage',
 
     keybindings: [
-      monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_R
+      monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyR,
     ],
 
     run: (editor: Editor) => {
       const code = editor.getValue()
       clearCoverageDots()
+
+      // Lazy load instrument module
+      if (!instrument) {
+        instrument = require('./instrument')
+      }
 
       const { lines, error } = instrument(code)
       visualState.editor.coverageDots = monacoInput.deltaDecorations([], lines)
@@ -103,21 +121,19 @@ const initMonacoInput = () => {
       if (error) {
         opmAppendOutput(error, true)
       }
-    }
+    },
   })
 
   monacoInput.addAction({
     id: 'clear-output',
     label: 'Clear output',
 
-    keybindings: [
-      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_K
-    ],
+    keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK],
 
     run: () => {
       monacoOutput.setValue('')
       visualState.console.clear()
-    }
+    },
   })
 
   monacoInput.addAction({
@@ -125,12 +141,12 @@ const initMonacoInput = () => {
     label: 'Save',
 
     keybindings: [
-      monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_S
+      monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyS,
     ],
 
     run: (editor: Editor) => {
       localStorage.setItem('code', editor.getValue())
-    }
+    },
   })
 
   /**
@@ -153,8 +169,8 @@ const initMonacoOutput = () => {
     fontSize: 13,
     lineHeight: 21,
     readOnly: true,
-    matchBrackets: false,
-    renderLineHighlight: 'none'
+    matchBrackets: 'never',
+    renderLineHighlight: 'none',
   })
 
   monacoOutput.getModel().updateOptions({ tabSize: 2 })
@@ -181,7 +197,7 @@ const opmAppendOutput = (code: string, isError: boolean) => {
 const appendErrorHighlight = (lineNo: number) => {
   visualState.console.errorHighlights.push({
     range: new monaco.Range(lineNo, 1, lineNo, 100),
-    options: { inlineClassName: 'inlineDecoration' }
+    options: { inlineClassName: 'inlineDecoration' },
   })
 }
 
@@ -194,7 +210,7 @@ amdRequire(['vs/editor/editor.main'], () => {
   monaco.editor.defineTheme('afeemTheme', afeemTheme)
 
   monaco.languages.registerCompletionItemProvider('javascript', {
-    provideCompletionItems: () => autoCompletions
+    provideCompletionItems: () => getCompletions(monaco),
   })
 
   initMonacoInput()

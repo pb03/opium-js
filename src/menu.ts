@@ -24,8 +24,8 @@ const view = {
   ]
 }
 
-const window = {
-  role: 'window',
+const windowMenu = {
+  label: 'Window',
   submenu: [
     { role: 'close' },
     { role: 'minimize' },
@@ -43,7 +43,7 @@ const help = {
   ]
 }
 
-const menuTemplate: any[] = [edit, view, window, help]
+const menuTemplate: any[] = [edit, view, windowMenu, help]
 
 if (process.platform === 'darwin') {
   menuTemplate.unshift({

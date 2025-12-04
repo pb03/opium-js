@@ -149,7 +149,7 @@ const _removePackageDropdown = () => {
 /**
  * Triggers on Enter press, after filling package url
  */
-const _onPackageFormSubmit = (e: KeyboardEvent) => {
+const _onPackageFormSubmit = (e: SubmitEvent) => {
   e.preventDefault()
   let url: string
   const activeItem: HTMLLIElement = document.querySelector('.package__list-item.is-active')
